@@ -9,7 +9,8 @@ the fridge openly on their side. The twist is withheld until the last
 beat: the appliance does not nag, it takes sides against its owner.
 
 Gate asserted before writing: 1-200 characters, a single line, not only
-whitespace, no emoji, no quotation marks, valid UTF-8 when encoded.
+whitespace, no emoji, no quotation marks, no control characters, valid
+UTF-8 when encoded.
 """
 
 import os
@@ -26,6 +27,7 @@ def validate(text: str) -> bytes:
     assert isinstance(text, str) and text.strip(), "entry must be non-blank text"
     assert 1 <= len(text) <= 200, f"entry must be 1-200 chars, got {len(text)}"
     assert "\n" not in text and "\r" not in text, "entry must be a single line"
+    assert not any(ord(ch) < 0x20 for ch in text), "entry must carry no control characters"
     assert '"' not in text, "entry must carry no quotation marks"
     assert not any(_is_emoji(ch) for ch in text), "entry must carry no emoji"
     data = text.encode("utf-8")
